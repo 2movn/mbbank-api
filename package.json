@@ -1,0 +1,20 @@
+{
+  "name": "auto-bank",
+  "version": "1.0.0",
+  "description": "Auto check banking MB-Bank",
+  "main": "run.js",
+  "author": "shanghaz",
+  "license": "ISC",
+  "scripts": {
+    "dev": "nodemon",
+    "start": "node run.js",
+    "debug": "nodemon --inspect run.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "moment": "^2.30.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
