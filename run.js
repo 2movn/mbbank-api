@@ -4,7 +4,8 @@ const { uploadToTelegram } = require('./unity/telegram.js');
 const fs = require('fs').promises;
 
 let config = {}
-
+let botToken
+let chatId
 const url = 'https://online.mbbank.com.vn/api/retail-transactionms/transactionms/get-account-transaction-history';
 
 let fist_run = true
@@ -23,13 +24,6 @@ function formatDateTime(date) {
     return formattedDateTime;
 }
 
-
-const Datenow = new Date();
-const time_run = formatDateTime(Datenow);
-
-const status = `Auto Bank runing at: ${time_run}`
-console.log(status);
-uploadToTelegram(status)
 
 
 function formatCurrency(amount) {
@@ -53,6 +47,8 @@ const sendRequest = async () => {
         console.log('Lỗi: Chưa cấu hình config');
         return;
     }
+    botToken = config.config
+    chatId = config.chatId
     const currentDate = new Date();
     const formattedDate = `${currentDate.getDate().toString().padStart(2, '0')}/${(currentDate.getMonth() + 1).toString().padStart(2, '0')}/${currentDate.getFullYear()}`;
     const headers = {
@@ -101,7 +97,7 @@ const sendRequest = async () => {
             fist_run = false
             const status = `Số dư hiện tại: ${formatCurrency(firstBalance)}`
             console.log(status);
-            await uploadToTelegram(status)
+            await uploadToTelegram(status, botToken, chatId)
         }
 
         if (firstBalance !== previousBalance) {
@@ -115,7 +111,7 @@ const sendRequest = async () => {
             console.log('--------------------------------------');
             if (firstTransaction.creditAmount > 0) {
                 const status = `Bank: ${firstTransaction.accountNo}\nBalance: ${formatCurrency(firstBalance)}\nCredit Amount: ${firstTransaction.creditAmount}\nDescription: ${firstTransaction.addDescription}\nDate: ${firstTransaction.transactionDate}`
-                await uploadToTelegram(status)
+                await uploadToTelegram(status, botToken, chatId)
                 const addDescription = firstTransaction.addDescription;
                 const regex = /NAP\d+/gi; // Thay đổi để xác định nội dung. Ví dụ lấy : NAP1234567
                 const found = addDescription.match(regex);
@@ -132,7 +128,7 @@ const sendRequest = async () => {
         const currentDate = new Date();
         const time_erro = formatDateTime(currentDate);
         const status = `Auto Bank Erro at: ${time_erro} | Mgs: ${error.message}`
-        await uploadToTelegram(status)
+        await uploadToTelegram(status, botToken, chatId)
     }
 };
 
